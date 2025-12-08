@@ -36,3 +36,4 @@ Temporary Items
 # End of macOS.gitignore
 
 .swiftpm/*
+.build/*
