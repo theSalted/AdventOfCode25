@@ -33,8 +33,6 @@ int main(void) {
 
         // printf("%s\n", text);
 
-        char prev = '.';
-
         int result = 0;
 
         for (int i = 0; text[i] != '\0'; i++) {
@@ -42,48 +40,45 @@ int main(void) {
              *  E F G
              *  H I J
              *  K L M
-             *  H == prev
              */
             char c = text[i];
             if (c != '@') {
-                prev = c;
                 continue;
             }
 
-            int j = i + 1;
+            int col = i % 140;
+            int row = i / 140;
+            int count = 0;
 
-            int f = i - 140;
-            int e = f - 1;
-            int g = f + 1;
+            // Check all 8 neighbors
+            // H (left)
+            if (col > 0 && text[i - 1] == '@') count++;
+            // J (right)
+            if (col < 139 && text[i + 1] == '@') count++;
 
-            int l = i + 140;
-            int k = l - 1;
-            int m = l + 1;
-
-            int count = prev == '@' ? 1 : 0;
-
-            if (f + e + g >= 3) {
-                count += text[f] == '@' ? 1 : 0;
-                count += text[e] == '@' ? 1 : 0;
-                count += text[g] == '@' ? 1 : 0;
+            // Top row (E, F, G)
+            if (row > 0) {
+                // F (above)
+                if (text[i - 140] == '@') count++;
+                // E (top-left)
+                if (col > 0 && text[i - 141] == '@') count++;
+                // G (top-right)
+                if (col < 139 && text[i - 139] == '@') count++;
             }
 
-            // 1960 + 1959 + 1958 = 5877
-            if (l + k + m <= 5877) {
-                count += text[l] == '@' ? 1 : 0;
-                count += text[k] == '@' ? 1 : 0;
-                count += text[m] == '@' ? 1 : 0;
-            }
-
-            if (j <= 1960) {
-                count += text[j] == '@' ? 1 : 0;
+            // Bottom row (K, L, M)
+            if (row < 139) {
+                // L (below)
+                if (text[i + 140] == '@') count++;
+                // K (bottom-left)
+                if (col > 0 && text[i + 139] == '@') count++;
+                // M (bottom-right)
+                if (col < 139 && text[i + 141] == '@') count++;
             }
 
             if (count < 4) {
                 result += 1;
             }
-
-            prev = c;
         }
 
         printf("Result: %d\n", result);
