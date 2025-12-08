@@ -10,3 +10,4 @@ I may (or may not) use a different language for each day:
 
 - Day 1: Swift
 - Day 2: Zig
+- Day 3: Go
