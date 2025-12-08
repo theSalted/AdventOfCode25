@@ -34,3 +34,5 @@ Temporary Items
 *.iCloud
 
 # End of macOS.gitignore
+
+.swiftpm/*
