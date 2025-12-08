@@ -5,3 +5,8 @@ My body is ready
 From https://adventofcode.com/2025/about 
 
 Advent of Code is an Advent calendar of small programming puzzles for a variety of skill levels that can be solved in any programming language you like. People use them as interview prep, company training, university coursework, practice problems, a speed contest, or to challenge each other.
+
+I may (or may not) use a different language for each day:
+
+- Day 1: Swift
+- Day 2: Zig
