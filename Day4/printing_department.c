@@ -31,9 +31,62 @@ int main(void) {
         }
         *write = '\0';
 
-        printf("%s\n", text);
+        // printf("%s\n", text);
 
+        char prev = '.';
 
+        int result = 0;
+
+        for (int i = 0; text[i] != '\0'; i++) {
+            /*
+             *  E F G
+             *  H I J
+             *  K L M
+             *  H == prev
+             */
+            char c = text[i];
+            if (c != '@') {
+                prev = c;
+                continue;
+            }
+
+            int j = i + 1;
+
+            int f = i - 140;
+            int e = f - 1;
+            int g = f + 1;
+
+            int l = i + 140;
+            int k = l - 1;
+            int m = l + 1;
+
+            int count = prev == '@' ? 1 : 0;
+
+            if (f + e + g >= 3) {
+                count += text[f] == '@' ? 1 : 0;
+                count += text[e] == '@' ? 1 : 0;
+                count += text[g] == '@' ? 1 : 0;
+            }
+
+            // 1960 + 1959 + 1958 = 5877
+            if (l + k + m <= 5877) {
+                count += text[l] == '@' ? 1 : 0;
+                count += text[k] == '@' ? 1 : 0;
+                count += text[m] == '@' ? 1 : 0;
+            }
+
+            if (j <= 1960) {
+                count += text[j] == '@' ? 1 : 0;
+            }
+
+            if (count < 4) {
+                result += 1;
+            }
+
+            prev = c;
+        }
+
+        printf("Result: %d\n", result);
 
         free(text);
         return 0;
