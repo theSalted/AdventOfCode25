@@ -38,3 +38,6 @@ Temporary Items
 .swiftpm/*
 .build/*
 printing_department
+*.hi
+*.o
+cafteria
