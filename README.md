@@ -12,3 +12,5 @@ I may (or may not) use a different language for each day:
 - Day 2: Zig
 - Day 3: Go
 - Day 4: C
+- Day 5: Haskell
+- Day 6: Rust
