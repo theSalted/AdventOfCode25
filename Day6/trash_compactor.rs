@@ -20,8 +20,6 @@ fn main() -> Result<(), std::io::Error> {
     let mut results: Vec<i64> = maps_digit.pop().unwrap();
     let digits: Vec<i64> = maps_digit.clone().into_iter().flatten().collect();
 
-
-
     for (i, digit) in digits.iter().enumerate() {
         let index = i % num_of_ops;
         let op = op_lists[index];
