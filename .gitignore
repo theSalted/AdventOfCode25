@@ -42,3 +42,5 @@ printing_department
 *.o
 cafeteria
 trash_compactor
+JOURNAL.md
+input
