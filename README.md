@@ -15,3 +15,4 @@ I may (or may not) use a different language for each day:
 - Day 5: Haskell
 - Day 6: Rust
 - Day 7: Python
+- Day 8: Kotlin
