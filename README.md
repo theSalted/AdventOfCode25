@@ -19,3 +19,4 @@ I may (or may not) use a different language for each day:
 - Day 7: Python
 - Day 8: Kotlin
 - Day 9: JavaScript
+- Day 10: Nim
