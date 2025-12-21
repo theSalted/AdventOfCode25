@@ -1,9 +1,4 @@
-# input = read("input", String)
-# blocks = split(input, "\n\n")
 
-# for block in blocks[1:5]
-#     println(block)
-# end
 
 # A = [1 2 3; 4 1 6; 7 8 1]
 # println(A[3])
@@ -72,19 +67,33 @@ function generate_masks(width, height, shape_maps)
     return masks
 end
 
+function generate_block(shape)
+  temp = []
+  for char in shape
+      if char == '#'
+          push!(temp, 1)
+      elseif char == '.'
+          push!(temp, 0)
+      end
+  end
+  return reshape(temp, 3, 3)
+end
+
+input = read("input", String)
+blocks = split(input, "\n\n")
+shapes = []
+for block in blocks[1:6]
+  _, rest = split(block, "\n", limit=2)
+  push!(shapes, generate_block(rest))
+end
+
+println(shapes)
 
 # shape = """#.#
 # ###
 # #.#"""
 
-# temp = []
-# for char in shape
-#     if char == '#'
-#         push!(temp, 1)
-#     elseif char == '.'
-#         push!(temp, 0)
-#     end
-# end
+
 
 # shape_maps = reshape(temp, 3, 3)
 
