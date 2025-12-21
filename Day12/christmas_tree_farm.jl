@@ -22,6 +22,10 @@ function generate_block(shape::AbstractString)
     return M
 end
 
+function count_cells(shape::AbstractMatrix{<:Integer})
+    return sum(shape)
+end
+
 function generate_mask(width, height, shape::AbstractMatrix{<:Integer})
     @assert width >= 3 && height >= 3
     mask = big(0)
@@ -46,18 +50,83 @@ function generate_mask(width, height, shape::AbstractMatrix{<:Integer})
     return mask
 end
 
-function generate_masks(width, height, shape_maps)
+function generate_masks(width, height, shape_map)
     masks = BigInt[]
+    base_mask = generate_mask(width, height, shape_map)
     for y in 1:height-2
         for x in 1:width-2
-            mask = generate_mask(width, height, shape_maps) >> ((y - 1) * width + x - 1)
-            println("Mask: ", string(mask, base=2, pad=width*height))
+            mask = base_mask >> ((y - 1) * width + x - 1)
             push!(masks, mask)
         end
     end
     return masks
 end
 
+function generate_all_masks_for_shape(width, height, shape::AbstractMatrix{<:Integer})
+    muts = unique_board_mutations(shape)
+    all_masks = Set{BigInt}()
+    for m in muts
+        for mask in generate_masks(width, height, m)
+            push!(all_masks, mask)
+        end
+    end
+    return collect(all_masks)
+end
+
+function dfs(board::BigInt, pieces_to_place::Vector{Vector{BigInt}}, piece_idx::Int)
+    if piece_idx > length(pieces_to_place)
+        return true  # All pieces placed successfully
+    end
+
+    masks = pieces_to_place[piece_idx]
+    for mask in masks
+        if (board & mask) == 0  # No overlap
+            new_board = board | mask
+            if dfs(new_board, pieces_to_place, piece_idx + 1)
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+function can_fit_region(width, height, shapes, counts)
+    total_area = width * height
+
+    required_cells = sum(counts[i] * count_cells(shapes[i]) for i in 1:length(shapes))
+
+    if required_cells > total_area
+        return false
+    end
+
+    if required_cells == 0
+        return true
+    end
+
+    shape_masks = [generate_all_masks_for_shape(width, height, s) for s in shapes]
+
+    pieces_to_place = Vector{BigInt}[]
+    for (i, count) in enumerate(counts)
+        for _ in 1:count
+            push!(pieces_to_place, shape_masks[i])
+        end
+    end
+
+    sort!(pieces_to_place, by=length)
+
+    return dfs(big(0), pieces_to_place, 1)
+end
+
+function parse_region(line)
+    parts = split(line)
+    dims = parts[1]
+    w, h = parse.(Int, split(replace(dims, ":" => ""), "x"))
+    counts = parse.(Int, parts[2:end])
+    return w, h, counts
+end
+
+# Main
 input = read("input", String)
 blocks = split(input, "\n\n")
 
@@ -67,12 +136,15 @@ for block in blocks[1:6]
     push!(shapes, generate_block(rest))
 end
 
-println(shapes)
+region_lines = split(chomp(blocks[7]), "\n")
 
-board = "5x5"
-w, h = parse.(Int, split(board, "x"))
-for s in shapes
-    muts = unique_board_mutations(s)
-    masks = Set(Iterators.flatten(generate_masks(w, h, m) for m in muts))
-    println("Final masks: ", masks)
+count_fits = 0
+for (i, line) in enumerate(region_lines)
+    print("\r$i/$(length(region_lines))")
+    w, h, counts = parse_region(line)
+    if can_fit_region(w, h, shapes, counts)
+        global count_fits += 1
+    end
 end
+
+println("\n$count_fits")
