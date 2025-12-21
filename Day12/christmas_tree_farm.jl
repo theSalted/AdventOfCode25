@@ -1,28 +1,5 @@
-
-
-# A = [1 2 3; 4 1 6; 7 8 1]
-# println(A[3])
-
-# Functions
-# function extract(line)
-#   result = []
-
-#   for char in line
-#     if char == '#'
-#       push!(result, 1)
-#     else
-#       push!(result, 0)
-#     end
-#   end
-#   return result
-# end
-# shape_lines = split(shape, "\n")
-# shape_maps = [extract(line) for line in shape_lines]
-
 function unique_board_mutations(A::AbstractMatrix)
     rots = (A, rotl90(A,1), rotl90(A,2), rotl90(A,3))
-    flipped = reverse(A, dims=2)
-
     S = Set{Matrix{eltype(A)}}()
     for R in rots
         push!(S, Matrix(R))
@@ -31,32 +8,46 @@ function unique_board_mutations(A::AbstractMatrix)
     return S
 end
 
-function generate_mask(width, height, shape)
-    mask = 0
+function generate_block(shape::AbstractString)
+    rows = split(chomp(shape), "\n")
+    @assert length(rows) == 3
+    @assert all(length(r) == 3 for r in rows)
+
+    M = Matrix{Int}(undef, 3, 3)
+    for y in 1:3
+        for x in 1:3
+            M[y, x] = rows[y][x] == '#' ? 1 : 0
+        end
+    end
+    return M
+end
+
+function generate_mask(width, height, shape::AbstractMatrix{<:Integer})
+    @assert width >= 3 && height >= 3
+    mask = big(0)
     counter = 1
+
     for y in 1:height
         for x in 1:width
-            mask = mask << 1
+            mask <<= 1
 
-            index = (y - 1) * width + x
-
-            if index > 2 * width + 3
-              continue
+            if y > 3 || x > 3
+                continue
             end
 
-            if x + 2 > width
-              continue
-            end
+            sy = (counter - 1) ÷ 3 + 1
+            sx = (counter - 1) % 3 + 1
 
-            mask += shape[counter]
+            mask += shape[sy, sx]
             counter += 1
         end
     end
+
     return mask
 end
 
 function generate_masks(width, height, shape_maps)
-    masks = []
+    masks = BigInt[]
     for y in 1:height-2
         for x in 1:width-2
             mask = generate_mask(width, height, shape_maps) >> ((y - 1) * width + x - 1)
@@ -67,50 +58,21 @@ function generate_masks(width, height, shape_maps)
     return masks
 end
 
-function generate_block(shape)
-  temp = []
-  for char in shape
-      if char == '#'
-          push!(temp, 1)
-      elseif char == '.'
-          push!(temp, 0)
-      end
-  end
-  return reshape(temp, 3, 3)
-end
-
 input = read("input", String)
 blocks = split(input, "\n\n")
-shapes = []
+
+shapes = Matrix{Int}[]
 for block in blocks[1:6]
-  _, rest = split(block, "\n", limit=2)
-  push!(shapes, generate_block(rest))
+    _, rest = split(block, "\n", limit=2)
+    push!(shapes, generate_block(rest))
 end
 
 println(shapes)
 
-# shape = """#.#
-# ###
-# #.#"""
-
-
-
-# shape_maps = reshape(temp, 3, 3)
-
-# mutations = unique_board_mutations(shape_maps)
-# println(mutations)
-
-# println(shape_maps)
-
-# board = "5x5"
-
-# board_info = split(board, "x")
-# width = parse(Int, board_info[1])
-# height = parse(Int, board_info[2])
-
-# println("Width: ", width)
-# println("Height: ", height)
-
-# masks = Set(Iterators.flatten(generate_masks(width, height, m) for m in mutations))
-
-# println("Final masks: ", masks)
+board = "5x5"
+w, h = parse.(Int, split(board, "x"))
+for s in shapes
+    muts = unique_board_mutations(s)
+    masks = Set(Iterators.flatten(generate_masks(w, h, m) for m in muts))
+    println("Final masks: ", masks)
+end
