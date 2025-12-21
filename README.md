@@ -24,3 +24,4 @@ I may (or may not) use a different language for each day:
 - Day 9: JavaScript
 - Day 10: Nim
 - Day 11: OCaml
+- Day 12: Julia
